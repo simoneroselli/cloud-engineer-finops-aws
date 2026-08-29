@@ -31,31 +31,18 @@ resource "aws_athena_database" "finops_db" {
   bucket = aws_s3_bucket.athena_results.bucket
 }
 
-resource "aws_athena_workgroup" "finops_workgroup" {
-  name = "finops_workgroup"
-
-  configuration {
-    enforce_workgroup_configuration    = true
-    publish_cloudwatch_metrics_enabled = false
-
-    result_configuration {
-      output_location = "s3://${aws_s3_bucket.athena_results.bucket}/output/"
-    }
-  }
-}
-
 # --- Athena Saved Queries ---
 
 resource "aws_athena_named_query" "schema" {
   name      = "create_finops_schemas"
-  workgroup = aws_athena_workgroup.finops_workgroup.id
+  workgroup = "primary"
   database  = aws_athena_database.finops_db.name
   query     = file("${path.module}/athena/schema.sql")
 }
 
 resource "aws_athena_named_query" "unit_metrics" {
   name      = "finops_unit_metrics"
-  workgroup = aws_athena_workgroup.finops_workgroup.id
+  workgroup = "primary"
   database  = aws_athena_database.finops_db.name
   query     = file("${path.module}/athena/unit_metrics.sql")
 }

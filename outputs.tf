@@ -15,7 +15,7 @@ output "athena_database" {
 
 output "athena_workgroup" {
   description = "Athena workgroup name"
-  value       = aws_athena_workgroup.finops_workgroup.name
+  value       = "primary"
 }
 
 output "named_query_schema_id" {
