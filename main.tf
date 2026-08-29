@@ -23,26 +23,3 @@ resource "aws_s3_object" "mau_data" {
   source = "${path.module}/data/mau_data.csv"
   etag   = filemd5("${path.module}/data/mau_data.csv")
 }
-
-# --- Athena Resources ---
-
-resource "aws_athena_database" "finops_db" {
-  name   = "finops_db"
-  bucket = aws_s3_bucket.athena_results.bucket
-}
-
-# --- Athena Saved Queries ---
-
-resource "aws_athena_named_query" "schema" {
-  name      = "create_finops_schemas"
-  workgroup = "primary"
-  database  = aws_athena_database.finops_db.name
-  query     = file("${path.module}/athena/schema.sql")
-}
-
-resource "aws_athena_named_query" "unit_metrics" {
-  name      = "finops_unit_metrics"
-  workgroup = "primary"
-  database  = aws_athena_database.finops_db.name
-  query     = file("${path.module}/athena/unit_metrics.sql")
-}
