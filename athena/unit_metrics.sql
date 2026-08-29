@@ -1,6 +1,6 @@
 WITH monthly_spend AS (
   SELECT 
-    substr(line_item_usage_start_date, 1, 7) AS month,
+    substr(CAST(line_item_usage_start_date AS VARCHAR), 1, 7) AS month,
     SUM(line_item_unblended_cost) AS total_cloud_cost
   FROM cur_reports
   GROUP BY 1

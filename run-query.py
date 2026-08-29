@@ -100,22 +100,101 @@ def run_sql_file(client, file_path: str, fetch_results: bool = False):
             print_query_results(client, query_id)
 
 
-def main():
-    print(f"Connecting to Athena on {FLOCI_ENDPOINT} (Database: {DATABASE_NAME})")
-    client = get_athena_client()
+def ensure_glue_schema():
+    """Registers the Glue database and tables in Floci so Athena/DuckDB can query them."""
+    glue = boto3.client(
+        "glue",
+        endpoint_url=FLOCI_ENDPOINT,
+        region_name=AWS_REGION,
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    )
 
+    print(f"Ensuring Glue database '{DATABASE_NAME}' exists...")
+    try:
+        glue.create_database(DatabaseInput={"Name": DATABASE_NAME})
+    except Exception as e:
+        if "AlreadyExists" not in str(e):
+            print(f"  Database note: {e}")
+
+    # Register cur_reports
+    print("Ensuring Glue table 'cur_reports' exists...")
+    try:
+        glue.create_table(
+            DatabaseName=DATABASE_NAME,
+            TableInput={
+                "Name": "cur_reports",
+                "TableType": "EXTERNAL_TABLE",
+                "Parameters": {
+                    "classification": "csv",
+                    "skip.header.line.count": "1",
+                },
+                "StorageDescriptor": {
+                    "Location": "s3://finops-unit-metrics/cur/",
+                    "InputFormat": "org.apache.hadoop.mapred.TextInputFormat",
+                    "OutputFormat": "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+                    "SerdeInfo": {
+                        "SerializationLibrary": "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe",
+                        "Parameters": {"field.delim": ","},
+                    },
+                    "Columns": [
+                        {"Name": "line_item_usage_start_date", "Type": "string"},
+                        {"Name": "line_item_product_code", "Type": "string"},
+                        {"Name": "line_item_unblended_cost", "Type": "double"},
+                    ],
+                },
+            },
+        )
+    except Exception as e:
+        if "AlreadyExists" not in str(e):
+            print(f"  cur_reports note: {e}")
+
+    # Register mau_telemetry
+    print("Ensuring Glue table 'mau_telemetry' exists...")
+    try:
+        glue.create_table(
+            DatabaseName=DATABASE_NAME,
+            TableInput={
+                "Name": "mau_telemetry",
+                "TableType": "EXTERNAL_TABLE",
+                "Parameters": {
+                    "classification": "csv",
+                    "skip.header.line.count": "1",
+                },
+                "StorageDescriptor": {
+                    "Location": "s3://finops-unit-metrics/mau/",
+                    "InputFormat": "org.apache.hadoop.mapred.TextInputFormat",
+                    "OutputFormat": "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+                    "SerdeInfo": {
+                        "SerializationLibrary": "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe",
+                        "Parameters": {"field.delim": ","},
+                    },
+                    "Columns": [
+                        {"Name": "month", "Type": "string"},
+                        {"Name": "active_users", "Type": "int"},
+                    ],
+                },
+            },
+        )
+    except Exception as e:
+        if "AlreadyExists" not in str(e):
+            print(f"  mau_telemetry note: {e}")
+
+
+def main():
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    schema_file = os.path.join(base_dir, "athena", "schema.sql")
     unit_metrics_file = os.path.join(base_dir, "athena", "unit_metrics.sql")
 
     try:
-        # Step 1: Run table creation schemas
-        run_sql_file(client, schema_file, fetch_results=False)
+        # Step 1: Ensure Glue catalog schema is registered
+        ensure_glue_schema()
 
         # Step 2: Run unit metrics query and display results
+        print(f"\nConnecting to Athena on {FLOCI_ENDPOINT} (Database: {DATABASE_NAME})")
+        client = get_athena_client()
         run_sql_file(client, unit_metrics_file, fetch_results=True)
 
-        print("All queries executed successfully.")
+        print("Query executed successfully.")
     except Exception as e:
         print(f"Error executing queries: {e}", file=sys.stderr)
         sys.exit(1)
