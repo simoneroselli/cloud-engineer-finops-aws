@@ -1,11 +1,11 @@
 output "data_bucket" {
-  description = "S3 bucket containing the CUR and MAU source datasets"
+  description = "S3 bucket containing source datasets and query results"
   value       = aws_s3_bucket.finops_data.bucket
 }
 
-output "results_bucket" {
-  description = "S3 bucket configured for Athena query results"
-  value       = aws_s3_bucket.athena_results.bucket
+output "athena_output_location" {
+  description = "S3 URI configured for Athena query results"
+  value       = "s3://${aws_s3_bucket.finops_data.bucket}/output/"
 }
 
 

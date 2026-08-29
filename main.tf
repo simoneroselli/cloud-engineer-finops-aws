@@ -5,11 +5,6 @@ resource "aws_s3_bucket" "finops_data" {
   force_destroy = true
 }
 
-resource "aws_s3_bucket" "athena_results" {
-  bucket        = "${var.data_bucket_name}-results"
-  force_destroy = true
-}
-
 resource "aws_s3_object" "cur_data" {
   bucket = aws_s3_bucket.finops_data.id
   key    = "cur/cur_data.csv"
