@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Script to execute Athena schema setup and unit metrics queries against Floci/AWS."""
+"""Script to ensure Glue schemas and execute Athena FinOps unit metrics query against Floci/AWS."""
 
 import os
 import sys
@@ -61,7 +61,6 @@ def print_query_results(client, query_id: str):
             print("No results returned.")
             return
 
-        # Extract headers and rows
         headers = [col.get("VarCharValue", "") for col in rows[0]["Data"]]
         col_widths = [len(h) for h in headers]
 
@@ -82,7 +81,7 @@ def print_query_results(client, query_id: str):
         print()
 
 
-def run_sql_file(client, file_path: str, fetch_results: bool = False):
+def run_sql_file(client, file_path: str, fetch_results: bool = True):
     """Reads a SQL file and executes its statements."""
     print(f"\n--- Running: {file_path} ---")
     if not os.path.exists(file_path):
@@ -91,7 +90,6 @@ def run_sql_file(client, file_path: str, fetch_results: bool = False):
     with open(file_path, "r", encoding="utf-8") as f:
         content = f.read()
 
-    # Split multiple statements if any (e.g., schema.sql with multiple CREATE TABLE)
     statements = [stmt.strip() for stmt in content.split(";") if stmt.strip()]
 
     for stmt in statements:
