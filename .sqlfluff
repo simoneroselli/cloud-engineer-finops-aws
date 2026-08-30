@@ -1,0 +1,6 @@
+[sqlfluff]
+dialect = trino
+exclude_rules = ST09
+
+[sqlfluff:indentation]
+tab_space_size = 2
