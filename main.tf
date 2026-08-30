@@ -21,50 +21,16 @@ resource "aws_s3_object" "mau_data" {
 
 # --- Lambda Functions: Untagged Spend ---
 
-data "archive_file" "lambda_zip" {
-  type        = "zip"
-  output_path = "${path.module}/untagged_spend.zip"
+module "untagged_spend" {
+  source = "./modules/athena_lambda_reporter"
 
-  # Include python script and SQL directory in zip payload
-  source {
-    content  = file("${path.module}/bin/untagged_spend.py")
-    filename = "bin/untagged_spend.py"
-  }
-
-  source {
-    content  = file("${path.module}/athena/untagged_spend.sql")
-    filename = "athena/untagged_spend.sql"
-  }
-}
-
-resource "aws_iam_role" "lambda_exec_role" {
-  name = "finops_untagged_spend_lambda_role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action    = "sts:AssumeRole"
-        Effect    = "Allow"
-        Principal = { Service = "lambda.amazonaws.com" }
-      }
-    ]
-  })
-}
-
-resource "aws_lambda_function" "finops_untagged_spend" {
-  filename         = data.archive_file.lambda_zip.output_path
-  function_name    = "finops_untagged_spend_reporter"
-  role             = aws_iam_role.lambda_exec_role.arn
+  function_name = "finops_untagged_spend_reporter"
+  script_file_path = "${path.module}/bin/untagged_spend.py"
+  sql_file_path    = "${path.module}/athena/untagged_spend.sql"
   handler          = "untagged_spend.lambda_handler"
-  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
-  runtime          = "python3.11"
-  timeout          = 30
 
-  environment {
-    variables = {
-      ATHENA_DATABASE = "default"
-      RESULTS_BUCKET  = "s3://finops-unit-metrics/output"
-    }
+  environment_variables = {
+    ATHENA_DATABASE = "default"
+    RESULTS_BUCKET  = "s3://${aws_s3_bucket.finops_data.bucket}/output"
   }
 }
