@@ -11,4 +11,4 @@ SELECT
   m.active_users,
   ROUND(s.total_cloud_cost / (m.active_users / 1000.0), 4) AS cost_per_kmau
 FROM monthly_spend s
-JOIN mau_telemetry m ON s.month = m.month;
+JOIN mau_telemetry m ON s.month = m.month

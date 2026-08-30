@@ -54,7 +54,7 @@ module "kmau_cost" {
 
   function_name    = "finops_kmau_cost_reporter"
   script_file_path = "${path.module}/../bin/kmau_cost.py"
-  sql_file_path    = "${path.module}/../athena/unit_metrics.sql"
+  sql_file_path    = "${path.module}/../athena/kmau_cost.sql"
   handler          = "kmau_cost.lambda_handler"
 
   environment_variables = {

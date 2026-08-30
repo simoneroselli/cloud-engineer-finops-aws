@@ -11,10 +11,10 @@ def load_sql_query() -> str:
     """Reads the SQL query from the bundled athena directory."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
     candidates = [
-        os.path.join(script_dir, "athena", "unit_metrics.sql"),
-        os.path.join(script_dir, "..", "athena", "unit_metrics.sql"),
-        os.path.join(os.getcwd(), "athena", "unit_metrics.sql"),
-        os.path.join(os.getcwd(), "bin", "athena", "unit_metrics.sql"),
+        os.path.join(script_dir, "athena", "kmau_cost.sql"),
+        os.path.join(script_dir, "..", "athena", "kmau_cost.sql"),
+        os.path.join(os.getcwd(), "athena", "kmau_cost.sql"),
+        os.path.join(os.getcwd(), "bin", "athena", "kmau_cost.sql"),
     ]
     for sql_path in candidates:
         if os.path.exists(sql_path):
