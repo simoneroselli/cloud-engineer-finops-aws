@@ -13,6 +13,7 @@ This repository packages a few representative AWS cost-optimization checks as ex
 ## Getting Started
 
 ```bash
+# clone the repository
 git clone https://github.com/simoneroselli/cloud-engineer-finops-aws.git
 
 # start local AWS-compatible emulation
