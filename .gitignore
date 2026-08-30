@@ -25,5 +25,9 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-# Python
+# Environment & Python
 .venv/
+**/*.zip
+**/* lambda_zip.zip
+**/* response.json
+**/* output.json
