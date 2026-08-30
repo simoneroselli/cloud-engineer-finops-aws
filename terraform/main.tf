@@ -48,3 +48,17 @@ module "anomaly_detection" {
     RESULTS_BUCKET  = "s3://${aws_s3_bucket.finops_data.bucket}/output"
   }
 }
+
+module "kmau_cost" {
+  source = "./modules/athena_lambda_reporter"
+
+  function_name    = "finops_kmau_cost_reporter"
+  script_file_path = "${path.module}/../bin/kmau_cost.py"
+  sql_file_path    = "${path.module}/../athena/unit_metrics.sql"
+  handler          = "kmau_cost.lambda_handler"
+
+  environment_variables = {
+    ATHENA_DATABASE = "default"
+    RESULTS_BUCKET  = "s3://${aws_s3_bucket.finops_data.bucket}/output"
+  }
+}
