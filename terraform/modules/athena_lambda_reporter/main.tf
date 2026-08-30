@@ -27,12 +27,6 @@ data "archive_file" "lambda_zip" {
     content  = file(var.sql_file_path)
     filename = "athena/${local.sql_basename}"
   }
-
-  # Package SQL under bin/athena/ directory
-  source {
-    content  = file(var.sql_file_path)
-    filename = "bin/athena/${local.sql_basename}"
-  }
 }
 
 resource "aws_iam_role" "lambda_exec_role" {

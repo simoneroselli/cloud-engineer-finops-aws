@@ -19,7 +19,7 @@ resource "aws_s3_object" "mau_data" {
   etag   = filemd5("${path.module}/../data/mau_data.csv")
 }
 
-# --- Lambda Functions: Untagged Spend ---
+# --- Functions ---
 
 module "untagged_spend" {
   source = "./modules/athena_lambda_reporter"
@@ -28,6 +28,20 @@ module "untagged_spend" {
   script_file_path = "${path.module}/../bin/untagged_spend.py"
   sql_file_path    = "${path.module}/../athena/untagged_spend.sql"
   handler          = "untagged_spend.lambda_handler"
+
+  environment_variables = {
+    ATHENA_DATABASE = "default"
+    RESULTS_BUCKET  = "s3://${aws_s3_bucket.finops_data.bucket}/output"
+  }
+}
+
+module "anomaly_detection" {
+  source = "./modules/athena_lambda_reporter"
+
+  function_name    = "finops_anomaly_detection_reporter"
+  script_file_path = "${path.module}/../bin/anomaly_detection.py"
+  sql_file_path    = "${path.module}/../athena/anomaly_detection.sql"
+  handler          = "anomaly_detection.lambda_handler"
 
   environment_variables = {
     ATHENA_DATABASE = "default"
