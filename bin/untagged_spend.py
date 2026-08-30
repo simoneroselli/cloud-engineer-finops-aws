@@ -10,13 +10,21 @@ athena_client = boto3.client("athena", endpoint_url=ENDPOINT_URL)
 def load_sql_query() -> str:
     """Reads the SQL query from the bundled athena directory."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    sql_path = os.path.join(script_dir, "athena", "untagged_spend.sql")
-    with open(sql_path, "r") as f:
-        return f.read()
+    candidates = [
+        os.path.join(script_dir, "athena", "untagged_spend.sql"),
+        os.path.join(script_dir, "..", "athena", "untagged_spend.sql"),
+        os.path.join(os.getcwd(), "athena", "untagged_spend.sql"),
+        os.path.join(os.getcwd(), "bin", "athena", "untagged_spend.sql"),
+    ]
+    for sql_path in candidates:
+        if os.path.exists(sql_path):
+            with open(sql_path, "r") as f:
+                return f.read()
+    raise FileNotFoundError("Could not locate athena/untagged_spend.sql in package")
 
 def lambda_handler(event, context):
     database = os.environ.get("ATHENA_DATABASE", "default")
-    output_location = os.environ.get("RESULTS_BUCKET", "s3://finops-unit-metrics-results/athena-results/")
+    output_location = os.environ.get("RESULTS_BUCKET", "s3://finops-unit-metrics/output/")
     
     # 1. Read query string from file
     query_sql = load_sql_query()
