@@ -24,7 +24,7 @@ resource "aws_s3_object" "mau_data" {
 module "untagged_spend" {
   source = "./modules/athena_lambda_reporter"
 
-  function_name = "finops_untagged_spend_reporter"
+  function_name    = "finops_untagged_spend_reporter"
   script_file_path = "${path.module}/../bin/untagged_spend.py"
   sql_file_path    = "${path.module}/../athena/untagged_spend.sql"
   handler          = "untagged_spend.lambda_handler"
