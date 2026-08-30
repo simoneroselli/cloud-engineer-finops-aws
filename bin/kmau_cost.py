@@ -1,6 +1,7 @@
 import json
 import os
 import time
+
 import boto3
 
 ENDPOINT_URL = os.environ.get("AWS_ENDPOINT_URL", None)
