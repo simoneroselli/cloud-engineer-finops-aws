@@ -28,5 +28,6 @@ terraform.rc
 # Environment & Python
 .venv/
 **/*.zip
+**/*.pyc
 **/*lambda_zip.zip
 **/*response.json
