@@ -1,4 +1,4 @@
-# FinOps Athena Lambda Reference
+# Cloud Engineer FinOps AWS
 
 A practical FinOps starter project for running cost visibility, governance, and anomaly-detection workloads locally with Terraform, Athena, and Lambda-style Python functions.
 
@@ -13,7 +13,7 @@ This repository packages a few representative AWS cost-optimization checks as ex
 ## Getting Started
 
 ```bash
-git clone <repo>
+git clone https://github.com/simoneroselli/cloud-engineer-finops-aws.git
 
 # start local AWS-compatible emulation
 docker run --rm -p 4566:4566 -v /var/run/docker.sock:/var/run/docker.sock floci/floci:latest
