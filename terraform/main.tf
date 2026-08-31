@@ -19,7 +19,7 @@ resource "aws_s3_object" "mau_data" {
   etag   = filemd5("${path.module}/../data/mau_data.csv")
 }
 
-# --- Functions ---
+# --- Lambda Functions ---
 
 module "untagged_spend" {
   source = "./modules/athena_lambda_reporter"
