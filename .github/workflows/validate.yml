@@ -38,6 +38,12 @@ jobs:
           terraform init -backend=false -input=false
           terraform validate
 
+      - name: Trivy Terraform tag policy check
+        run: |
+          curl -fsSL -o /tmp/trivy.tar.gz https://github.com/aquasecurity/trivy/releases/download/v0.74.0/trivy_0.74.0_Linux-64bit.tar.gz
+          tar -xzf /tmp/trivy.tar.gz -C /tmp
+          /tmp/trivy config --config-check .trivy/policies --check-namespaces user --exit-code 1 terraform
+
       - name: Python lint and compile checks
         run: |
           ruff check bin
