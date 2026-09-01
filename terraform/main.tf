@@ -29,6 +29,12 @@ module "untagged_spend" {
   sql_file_path    = "${path.module}/../athena/untagged_spend.sql"
   handler          = "untagged_spend.lambda_handler"
 
+  tags = {
+    team        = "teamA"
+    environment = "staging"
+    project     = "projectA"
+  }
+
   environment_variables = {
     ATHENA_DATABASE = "default"
     RESULTS_BUCKET  = "s3://${aws_s3_bucket.finops_data.bucket}/output"
@@ -43,6 +49,12 @@ module "anomaly_detection" {
   sql_file_path    = "${path.module}/../athena/anomaly_detection.sql"
   handler          = "anomaly_detection.lambda_handler"
 
+  tags = {
+    team        = "teamA"
+    environment = "staging"
+    project     = "projectA"
+  }
+
   environment_variables = {
     ATHENA_DATABASE = "default"
     RESULTS_BUCKET  = "s3://${aws_s3_bucket.finops_data.bucket}/output"
@@ -56,6 +68,12 @@ module "kmau_cost" {
   script_file_path = "${path.module}/../bin/kmau_cost.py"
   sql_file_path    = "${path.module}/../athena/kmau_cost.sql"
   handler          = "kmau_cost.lambda_handler"
+
+  tags = {
+    team        = "teamA"
+    environment = "staging"
+    project     = "projectA"
+  }
 
   environment_variables = {
     ATHENA_DATABASE = "default"

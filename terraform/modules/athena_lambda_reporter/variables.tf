@@ -37,6 +37,20 @@ variable "environment_variables" {
   default     = {}
 }
 
+variable "tags" {
+  description = "Tags applied to the Lambda function. Must include team, environment, and project."
+  type        = map(string)
+
+  validation {
+    condition = alltrue([
+      contains(keys(var.tags), "team"),
+      contains(keys(var.tags), "environment"),
+      contains(keys(var.tags), "project")
+    ])
+    error_message = "The tags map must include team, environment, and project keys."
+  }
+}
+
 variable "create_role" {
   description = "Whether to create a default IAM execution role for the Lambda function"
   type        = bool
