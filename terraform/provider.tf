@@ -20,6 +20,9 @@ provider "aws" {
   endpoints {
     athena = var.floci_endpoint
     glue   = var.floci_endpoint
+    iam    = var.floci_endpoint
+    lambda = var.floci_endpoint
     s3     = var.floci_endpoint
+    sts    = var.floci_endpoint
   }
 }

@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "floci_endpoint" {
   description = "Floci / Local AWS endpoint URL"
   type        = string
-  default     = "http://localhost:4566"
+  default     = "http://floci-aws:4566"
 }
 
 variable "data_bucket_name" {
