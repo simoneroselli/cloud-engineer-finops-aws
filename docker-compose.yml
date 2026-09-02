@@ -24,3 +24,13 @@ services:
     environment:
       AWS_REGION: us-east-1
       TF_CLI_ARGS: "-no-color"
+
+  trivy:
+    image: aquasec/trivy:latest
+    container_name: finops-trivy
+    working_dir: /terraform
+    volumes:
+      - ./terraform:/terraform
+      - ./.trivy:/root/.trivy
+    environment:
+      AWS_REGION: us-east-1

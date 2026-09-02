@@ -25,6 +25,14 @@ docker compose exec terraform terraform init
 docker compose exec terraform terraform apply
 ```
 
+## Local Trivy policy check
+
+```bash
+docker compose run --rm trivy config --config-check /root/.trivy/policies --check-namespaces user --exit-code 1 .
+```
+
+This runs Trivy inside the project container against the mounted Terraform config and validates the custom policy rules stored under the repository's `.trivy` directory.
+
 ## Execute Lambdas
 
 ```bash
