@@ -16,13 +16,29 @@ This repository packages a few representative AWS cost-optimization checks as ex
 # clone the repository
 git clone https://github.com/simoneroselli/cloud-engineer-finops-aws.git
 
-# start local AWS-compatible emulation and the Terraform CLI container
+# start local AWS-compatible emulation and the CLI containers
 cd /path/to/cloud-engineer-finops-aws
 docker compose up -d
 
 # run Terraform from inside the container (no local install required)
 docker compose exec terraform terraform init
 docker compose exec terraform terraform apply
+
+# run AWS CLI commands against the local emulator
+docker compose run --rm awscli --endpoint-url=http://floci:4566 sts get-caller-identity
+```
+
+The `awscli` service uses the local emulator by default when an endpoint is provided. It mounts the project at `/workspace` and reads host AWS profiles from `~/.aws` for commands that target AWS directly.
+
+For example, invoke a deployed local Lambda without installing AWS CLI locally:
+
+```bash
+docker compose run --rm awscli \
+  --endpoint-url=http://floci:4566 lambda invoke \
+  --function-name finops_kmau_cost_reporter \
+  --cli-binary-format raw-in-base64-out \
+  --payload '{}' \
+  /workspace/response.json
 ```
 
 ## Local Trivy policy check
@@ -33,14 +49,5 @@ docker compose run --rm trivy config --config-check /root/.trivy/policies --chec
 
 This runs Trivy inside the project container against the mounted Terraform config and validates the custom policy rules stored under the repository's `.trivy` directory.
 
-## Execute Lambdas
-
-```bash
-aws --endpoint-url=http://localhost:4566 lambda invoke \
-  --function-name finops_kmau_cost_reporter \
-  --cli-binary-format raw-in-base64-out \
-  --payload '{}' \
-  response.json
-```
-
+## Notes
 The project is intentionally designed as a simple FinOps reference pattern: local AWS emulation for development, Athena for SQL-based analysis, Python Lambda handlers for logic, and Terraform for repeatable deployment.

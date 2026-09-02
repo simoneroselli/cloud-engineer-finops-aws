@@ -25,6 +25,18 @@ services:
       AWS_REGION: us-east-1
       TF_CLI_ARGS: "-no-color"
 
+  awscli:
+    image: amazon/aws-cli:latest
+    container_name: finops-awscli
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+      - ${HOME}/.aws:/root/.aws:ro
+    environment:
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+
   trivy:
     image: aquasec/trivy:latest
     container_name: finops-trivy
