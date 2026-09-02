@@ -16,13 +16,13 @@ This repository packages a few representative AWS cost-optimization checks as ex
 # clone the repository
 git clone https://github.com/simoneroselli/cloud-engineer-finops-aws.git
 
-# start local AWS-compatible emulation
-docker run --rm -p 4566:4566 -v /var/run/docker.sock:/var/run/docker.sock floci/floci:latest
+# start local AWS-compatible emulation and the Terraform CLI container
+cd /path/to/cloud-engineer-finops-aws
+docker compose up -d
 
-# deploy the example infrastructure
-cd terraform
-terraform init
-terraform apply
+# run Terraform from inside the container (no local install required)
+docker compose exec terraform terraform init
+docker compose exec terraform terraform apply
 ```
 
 ## Execute Lambdas
